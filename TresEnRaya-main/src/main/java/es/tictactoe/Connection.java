@@ -11,43 +11,60 @@ import es.tictactoe.TicTacToeHandler.ServerToClientMsg;
 
 public class Connection {
 
-	private WebSocketSession session;
-	private ObjectMapper json;
+    // Se define la variable session de tipo WebSocketSession
+    private WebSocketSession session;
+    // Se define la variable json de tipo ObjectMapper
+    private ObjectMapper json;
 
-	public Connection(ObjectMapper json, WebSocketSession session) {
-		this.json = json;
-		this.session = session;
-	}
+    // Se define el constructor de la clase Connection
+    public Connection(ObjectMapper json, WebSocketSession session) {
+        // Se asigna el valor de json al atributo json de la clase
+        this.json = json;
+        // Se asigna el valor de session al atributo session de la clase
+        this.session = session;
+    }
 
-	public void sendEvent(Event event) {
+    // Se define el método sendEvent que recibe un objeto de tipo Event
+    public void sendEvent(Event event) {
 
-		ServerToClientMsg msg = new ServerToClientMsg();
-		msg.action = event.type;
-		msg.data = event.data;
+        // Se crea un objeto msg de tipo ServerToClientMsg
+        ServerToClientMsg msg = new ServerToClientMsg();
+        // Se asigna el valor del atributo type de event al atributo action de msg
+        msg.action = event.type;
+        // Se asigna el valor del atributo data de event al atributo data de msg
+        msg.data = event.data;
 
-		try {
+        try {
 
-			String msgJson = json.writeValueAsString(msg);
+            // Se convierte msg a formato JSON y se almacena en la variable msgJson
+            String msgJson = json.writeValueAsString(msg);
 
-			synchronized (session) {
-				session.sendMessage(new TextMessage(msgJson));
-				System.out.println("Sent message '" + msgJson + "' to client " + session.getId());
-			}
+            // Se utiliza un bloque sincronizado para enviar el mensaje al cliente
+            synchronized (session) {
+                // Se crea un objeto TextMessage con el contenido de msgJson y se envía a través de la sesión
+                session.sendMessage(new TextMessage(msgJson));
+                // Se muestra en la consola un mensaje de que se ha enviado el mensaje al cliente
+                System.out.println("Sent message '" + msgJson + "' to client " + session.getId());
+            }
 
-		} catch (Exception e) {
-			System.err.println("Exception sending action to client.");
-			e.printStackTrace(System.err);
-		}
-	}
+        } catch (Exception e) {
+            // Se muestra en la consola un mensaje de error si se produce una excepción al enviar el mensaje
+            System.err.println("Exception sending action to client.");
+            // Se muestra en la consola la traza de la excepción
+            e.printStackTrace(System.err);
+        }
+    }
 
-	public void sendEvent(EventType type, Object value) {
-		
-		Event event = new Event();
+    // Se define el método sendEvent que recibe un objeto de tipo EventType y un objeto de tipo Object
+    public void sendEvent(EventType type, Object value) {
+        // Se crea un objeto event de tipo Event
+        Event event = new Event();
+        // Se asigna el valor del atributo type al valor del parámetro type
+        event.type = type;
+        // Se asigna el valor del atributo data al valor del parámetro value
+        event.data = value;
 
-		event.type = type;
-		event.data = value;
-		
-		sendEvent(event);
-	}
-
+        // Se llama al método sendEvent pasándole como parámetro el objeto event creado
+        sendEvent(event);
+    }
 }
